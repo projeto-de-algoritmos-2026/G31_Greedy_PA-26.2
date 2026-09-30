@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv*/
+venv/
+env/
+.pytest_cache/
+.streamlit/secrets.toml
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# Os arquivos brutos do IBGE e do CNES não são versionados.
+# Instruções de download em data/README.md.
+data/raw/

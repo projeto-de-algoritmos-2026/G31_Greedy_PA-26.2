@@ -1,0 +1,13 @@
+# Leitura do shapefile do IBGE.
+#
+# pyshp é um módulo único em Python puro: não depende de GDAL nem de
+# compilador, ao contrário de geopandas. O shapefile do Censo 2022 já vem
+# em SIRGAS 2000 geográfico (latitude e longitude), então também não há
+# reprojeção a fazer — e por isso não precisamos de pyproj.
+pyshp==3.1.6
+
+# Interface do aplicativo.
+streamlit==1.37.0
+
+# Não há biblioteca de otimização aqui. O algoritmo guloso, a força bruta
+# e o cálculo dos centroides são implementados no projeto.
