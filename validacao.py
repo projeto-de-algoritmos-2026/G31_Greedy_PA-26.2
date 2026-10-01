@@ -3,6 +3,11 @@ Validação: o guloso vale a pena?
 
     python validacao.py
     python validacao.py --raio 3 --kmax 80
+    python validacao.py --so-mapa --kmapa 40
+
+A rodada completa leva uns vinte segundos, quase todos na força bruta. O
+`--so-mapa` pula tudo e desenha só o mapa, em cerca de um segundo — é o
+modo de olhar o resultado mudando de `k` e de raio sem esperar.
 
 Responde três perguntas, nesta ordem de importância:
 
@@ -18,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import random
 import sys
 from dataclasses import dataclass
@@ -47,6 +53,17 @@ COR = {
     "aleatórias": "#1baf7a",
     "mais centrais": "#eda100",
 }
+
+#: No mapa só há duas categorias, e a segunda é ausência: setor que
+#: ninguém alcança fica em cinza neutro, nunca numa segunda cor da paleta.
+#: Um cinza vale "sem dado"; uma cor valeria "outra coisa". Este tom é o
+#: mais claro que ainda passa de 3:1 de contraste na superfície clara.
+SEM_COBERTURA = "#8b8984"
+
+#: Um grau de latitude são 111 km em qualquer lugar. É o mesmo número que
+#: a `geometria` usa implicitamente pelo raio da Terra, e aqui serve só
+#: para desenhar o raio de cobertura na escala certa.
+KM_POR_GRAU = 111.0
 
 
 @dataclass
@@ -217,6 +234,105 @@ def grafico_ganho(passos, total: int) -> str:
     return "\n".join(p)
 
 
+def grafico_mapa(inst: Instancia, escolhidas: list[int]) -> str:
+    """
+    O mapa do DF: um ponto por setor censitário, azul se coberto.
+
+    A projeção é a mais simples que não distorce: multiplicar a longitude
+    pelo cosseno da latitude. Num território de 60 por 96 km a curvatura
+    da Terra não aparece, e um mapa de verdade exigiria biblioteca de GIS
+    — que o projeto inteiro evita de propósito.
+
+    O ponto é o centroide do setor, e o tamanho vai com a raiz da
+    população: a raiz, e não a população, porque o olho lê **área**, e
+    área cresce com o quadrado do raio. Com população direta no raio, um
+    setor de dez mil habitantes viraria uma bolha vinte vezes maior do
+    que é.
+    """
+    L, T = 24, 78
+    larg, alt = 620, 392
+    W, H = L + larg + 24, T + alt + 52
+
+    setores, unidades = inst.setores, inst.unidades
+    cos_lat = math.cos(math.radians(
+        sum(s.lat for s in setores) / len(setores)))
+
+    # o enquadramento sai só dos setores, que não mudam com o `k`. Se as
+    # escolhidas entrassem na conta, cada `k` daria um recorte diferente e
+    # dois mapas lado a lado deixariam de ser comparáveis — que é
+    # justamente para o que eles servem.
+    lat_min = min(s.lat for s in setores)
+    lat_max = max(s.lat for s in setores)
+    lon_min = min(s.lon for s in setores)
+    lon_max = max(s.lon for s in setores)
+
+    vao_x = max((lon_max - lon_min) * cos_lat, 1e-9)
+    vao_y = max(lat_max - lat_min, 1e-9)
+    # a mesma escala nos dois eixos, senão o DF sai esticado
+    escala = min(larg / vao_x, alt / vao_y)
+    folga_x = (larg - vao_x * escala) / 2
+    folga_y = (alt - vao_y * escala) / 2
+
+    def x(lon): return L + folga_x + (lon - lon_min) * cos_lat * escala
+    def y(lat): return T + folga_y + (lat_max - lat) * escala
+
+    cobertos = inst.cobertos_por(escolhidas)
+    coberta = inst.populacao_de(cobertos)
+    total = inst.populacao_total
+    maior = max((s.populacao for s in setores), default=1) or 1
+
+    p = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
+         f'viewBox="0 0 {W} {H}" font-family="system-ui, -apple-system, sans-serif">',
+         f'<rect width="{W}" height="{H}" fill="{SURFACE}"/>',
+         f'<text x="{L}" y="30" font-size="15" font-weight="600" fill="{TEXTO}">'
+         f'Onde {len(escolhidas)} unidades alcançam '
+         + f'{coberta:,}'.replace(",", ".")
+         + f' pessoas — {coberta/total:.0%} do DF</text>',
+         f'<text x="{L}" y="50" font-size="12" fill="{TEXTO_2}">'
+         + f'{len(setores):,}'.replace(",", ".")
+         + ' setores censitários · o tamanho do ponto é a população · '
+         f'raio de {inst.raio_km:g} km</text>']
+
+    # o alcance de cada escolhida, por baixo de tudo: é ele que explica
+    # por que os pontos ficaram azuis
+    raio_px = inst.raio_km / KM_POR_GRAU * escala
+    for j in escolhidas:
+        p.append(f'<circle cx="{x(unidades[j].lon):.1f}" '
+                 f'cy="{y(unidades[j].lat):.1f}" r="{raio_px:.1f}" '
+                 f'fill="{COR["guloso"]}" fill-opacity="0.07" '
+                 f'stroke="{COR["guloso"]}" stroke-opacity="0.25" stroke-width="1"/>')
+
+    # setores sem cobertura primeiro, para o azul ficar por cima
+    for coberto in (False, True):
+        cor = COR["guloso"] if coberto else SEM_COBERTURA
+        for i, s in enumerate(setores):
+            if (i in cobertos) is not coberto or s.populacao <= 0:
+                continue
+            r = 1.0 + 3.0 * math.sqrt(s.populacao / maior)
+            p.append(f'<circle cx="{x(s.lon):.1f}" cy="{y(s.lat):.1f}" '
+                     f'r="{r:.1f}" fill="{cor}"/>')
+
+    # as escolhidas por cima, com anel da própria superfície para não
+    # sumirem dentro da nuvem de pontos
+    for j in escolhidas:
+        p.append(f'<circle cx="{x(unidades[j].lon):.1f}" '
+                 f'cy="{y(unidades[j].lat):.1f}" r="4" fill="{TEXTO}" '
+                 f'stroke="{SURFACE}" stroke-width="2"/>')
+
+    rotulos = [(COR["guloso"], "setor coberto", TEXTO),
+               (SEM_COBERTURA, "setor sem cobertura", TEXTO_2),
+               (TEXTO, "unidade escolhida", TEXTO)]
+    xr = L
+    for cor, texto, cor_texto in rotulos:
+        p.append(f'<circle cx="{xr+5}" cy="{T+alt+26}" r="4.5" fill="{cor}" '
+                 f'stroke="{SURFACE}" stroke-width="1.5"/>')
+        p.append(f'<text x="{xr+16}" y="{T+alt+30}" font-size="12" '
+                 f'fill="{cor_texto}">{_escapar(texto)}</text>')
+        xr += 22 + len(texto) * 6.6
+    p.append("</svg>")
+    return "\n".join(p)
+
+
 def tabela(series: dict[str, list[int]], total: int,
            comparacoes: list[Comparacao], marcos: list[int]) -> str:
     linhas = ["## Guloso contra as escolhas óbvias", "",
@@ -252,12 +368,36 @@ def tabela(series: dict[str, list[int]], total: int,
     return "\n".join(linhas)
 
 
+def _desenhar_mapa(inst: Instancia, base: Path, k: int) -> int:
+    """
+    Grava o mapa de `k` unidades e devolve o código de saída.
+
+    O nome do arquivo leva o `k` justamente para `--so-mapa` poder ser
+    chamado várias vezes sem uma rodada apagar a anterior: k = 5, 20 e 60
+    lado a lado mostram o azul se espalhando.
+    """
+    escolhidas = guloso(inst, k)
+    destino = base.with_name(f"{base.name}_mapa_k{k}.svg")
+    destino.write_text(grafico_mapa(inst, escolhidas), encoding="utf-8")
+
+    coberta = inst.populacao_de(inst.cobertos_por(escolhidas))
+    total = inst.populacao_total
+    print(f"{k} unidades alcançam {coberta:,} pessoas ({coberta/total:.1%})"
+          .replace(",", "."))
+    print(f"gravado em {destino}")
+    return 0
+
+
 def _main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").strip().splitlines()[0])
     ap.add_argument("--raio", type=float, default=2.0, help="raio de cobertura em km")
     ap.add_argument("--kmax", type=int, default=60, help="até quantas unidades")
     ap.add_argument("--instancias", type=int, default=12,
                     help="quantas instâncias reduzidas comparar com o ótimo")
+    ap.add_argument("--kmapa", type=int, default=20,
+                    help="quantas unidades desenhar no mapa")
+    ap.add_argument("--so-mapa", action="store_true",
+                    help="desenha só o mapa e sai (segundos, em vez de minutos)")
     args = ap.parse_args(argv)
 
     from src.cobertura import carregar
@@ -274,18 +414,23 @@ def _main(argv: list[str] | None = None) -> int:
     print(f"raio de {args.raio:g} km · {len(inst.unidades)} unidades · "
           f"{len(inst.setores)} setores")
 
+    SAIDA.mkdir(exist_ok=True)
+    base = SAIDA / f"validacao_raio{args.raio:g}"
+
+    if args.so_mapa:
+        return _desenhar_mapa(inst, base, args.kmapa)
+
     print("calculando a curva de cobertura...")
     series = curva(inst, args.kmax)
     print("comparando com o ótimo...")
     comparacoes = contra_o_otimo(inst, args.instancias)
     passos = historico(inst, args.kmax)
 
-    SAIDA.mkdir(exist_ok=True)
-    base = SAIDA / f"validacao_raio{args.raio:g}"
     (base.with_name(base.name + "_cobertura.svg")).write_text(
         grafico_curva(series, total, args.raio), encoding="utf-8")
     (base.with_name(base.name + "_ganho.svg")).write_text(
         grafico_ganho(passos, total), encoding="utf-8")
+    _desenhar_mapa(inst, base, args.kmapa)
 
     marcos = [k for k in (5, 10, 20, 40, 60) if k <= args.kmax]
     md = tabela(series, total, comparacoes, marcos)
