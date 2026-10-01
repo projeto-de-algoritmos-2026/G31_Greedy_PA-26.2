@@ -103,10 +103,13 @@ def contra_o_otimo(inst: Instancia, instancias: int = 12,
     """
     Compara guloso e ótimo em instâncias reduzidas.
 
-    Na instância completa a força bruta é inviável: com 200 unidades,
-    k = 3 já leva mais de dois minutos e k = 8 levaria cerca de um ano e
-    meio. Sorteamos subconjuntos de candidatos pequenos o bastante para o
-    ótimo ser calculável.
+    Na instância completa a força bruta é inviável. Com 200 unidades,
+    k = 3 são 1.313.400 combinações e levam cerca de 107 segundos — uns
+    80 microssegundos cada. Em k = 8 são 55.098.996.177.225 combinações,
+    e no mesmo ritmo isso passa de cento e quarenta anos.
+
+    Por isso sorteamos subconjuntos de candidatos pequenos o bastante
+    para o ótimo ser calculável.
     """
     sorteio = random.Random(semente)
     disponiveis = len(inst.unidades)
