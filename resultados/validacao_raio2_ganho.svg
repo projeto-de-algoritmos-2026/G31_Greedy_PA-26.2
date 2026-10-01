@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="692" height="378" viewBox="0 0 692 378" font-family="system-ui, -apple-system, sans-serif">
+<rect width="692" height="378" fill="#fcfcfb"/>
+<text x="92" y="30" font-size="15" font-weight="600" fill="#0b0b0b">Cada unidade nova acrescenta menos que a anterior</text>
+<text x="92" y="50" font-size="12" fill="#52514e">É a submodularidade — a propriedade de onde sai a garantia de 1−1/e</text>
+<line x1="92" y1="314.0" x2="652" y2="314.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="82" y="318.0" font-size="11" fill="#52514e" text-anchor="end">0.0%</text>
+<line x1="92" y1="254.0" x2="652" y2="254.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="82" y="258.0" font-size="11" fill="#52514e" text-anchor="end">1.2%</text>
+<line x1="92" y1="194.0" x2="652" y2="194.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="82" y="198.0" font-size="11" fill="#52514e" text-anchor="end">2.3%</text>
+<line x1="92" y1="134.0" x2="652" y2="134.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="82" y="138.0" font-size="11" fill="#52514e" text-anchor="end">3.5%</text>
+<line x1="92" y1="74.0" x2="652" y2="74.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="82" y="78.0" font-size="11" fill="#52514e" text-anchor="end">4.7%</text>
+<rect x="92.0" y="74.0" width="7.3" height="240.0" rx="2" fill="#2a78d6"/>
+<rect x="101.3" y="96.3" width="7.3" height="217.7" rx="2" fill="#2a78d6"/>
+<rect x="110.7" y="105.3" width="7.3" height="208.7" rx="2" fill="#2a78d6"/>
+<rect x="120.0" y="131.8" width="7.3" height="182.2" rx="2" fill="#2a78d6"/>
+<rect x="129.3" y="141.5" width="7.3" height="172.5" rx="2" fill="#2a78d6"/>
+<rect x="138.7" y="163.6" width="7.3" height="150.4" rx="2" fill="#2a78d6"/>
+<rect x="148.0" y="167.9" width="7.3" height="146.1" rx="2" fill="#2a78d6"/>
+<rect x="157.3" y="167.9" width="7.3" height="146.1" rx="2" fill="#2a78d6"/>
+<rect x="166.7" y="199.3" width="7.3" height="114.7" rx="2" fill="#2a78d6"/>
+<rect x="176.0" y="200.6" width="7.3" height="113.4" rx="2" fill="#2a78d6"/>
+<rect x="185.3" y="203.7" width="7.3" height="110.3" rx="2" fill="#2a78d6"/>
+<rect x="194.7" y="208.9" width="7.3" height="105.1" rx="2" fill="#2a78d6"/>
+<rect x="204.0" y="210.0" width="7.3" height="104.0" rx="2" fill="#2a78d6"/>
+<rect x="213.3" y="210.1" width="7.3" height="103.9" rx="2" fill="#2a78d6"/>
+<rect x="222.7" y="212.7" width="7.3" height="101.3" rx="2" fill="#2a78d6"/>
+<rect x="232.0" y="215.4" width="7.3" height="98.6" rx="2" fill="#2a78d6"/>
+<rect x="241.3" y="220.5" width="7.3" height="93.5" rx="2" fill="#2a78d6"/>
+<rect x="250.7" y="221.5" width="7.3" height="92.5" rx="2" fill="#2a78d6"/>
+<rect x="260.0" y="223.0" width="7.3" height="91.0" rx="2" fill="#2a78d6"/>
+<rect x="269.3" y="223.4" width="7.3" height="90.6" rx="2" fill="#2a78d6"/>
+<rect x="278.7" y="233.0" width="7.3" height="81.0" rx="2" fill="#2a78d6"/>
+<rect x="288.0" y="236.8" width="7.3" height="77.2" rx="2" fill="#2a78d6"/>
+<rect x="297.3" y="240.7" width="7.3" height="73.3" rx="2" fill="#2a78d6"/>
+<rect x="306.7" y="247.4" width="7.3" height="66.6" rx="2" fill="#2a78d6"/>
+<rect x="316.0" y="247.8" width="7.3" height="66.2" rx="2" fill="#2a78d6"/>
+<rect x="325.3" y="251.1" width="7.3" height="62.9" rx="2" fill="#2a78d6"/>
+<rect x="334.7" y="253.6" width="7.3" height="60.4" rx="2" fill="#2a78d6"/>
+<rect x="344.0" y="253.6" width="7.3" height="60.4" rx="2" fill="#2a78d6"/>
+<rect x="353.3" y="257.0" width="7.3" height="57.0" rx="2" fill="#2a78d6"/>
+<rect x="362.7" y="258.7" width="7.3" height="55.3" rx="2" fill="#2a78d6"/>
+<rect x="372.0" y="262.1" width="7.3" height="51.9" rx="2" fill="#2a78d6"/>
+<rect x="381.3" y="263.4" width="7.3" height="50.6" rx="2" fill="#2a78d6"/>
+<rect x="390.7" y="263.5" width="7.3" height="50.5" rx="2" fill="#2a78d6"/>
+<rect x="400.0" y="263.6" width="7.3" height="50.4" rx="2" fill="#2a78d6"/>
+<rect x="409.3" y="263.7" width="7.3" height="50.3" rx="2" fill="#2a78d6"/>
+<rect x="418.7" y="263.7" width="7.3" height="50.3" rx="2" fill="#2a78d6"/>
+<rect x="428.0" y="267.5" width="7.3" height="46.5" rx="2" fill="#2a78d6"/>
+<rect x="437.3" y="268.8" width="7.3" height="45.2" rx="2" fill="#2a78d6"/>
+<rect x="446.7" y="273.0" width="7.3" height="41.0" rx="2" fill="#2a78d6"/>
+<rect x="456.0" y="273.3" width="7.3" height="40.7" rx="2" fill="#2a78d6"/>
+<rect x="465.3" y="273.4" width="7.3" height="40.6" rx="2" fill="#2a78d6"/>
+<rect x="474.7" y="275.4" width="7.3" height="38.6" rx="2" fill="#2a78d6"/>
+<rect x="484.0" y="279.1" width="7.3" height="34.9" rx="2" fill="#2a78d6"/>
+<rect x="493.3" y="279.9" width="7.3" height="34.1" rx="2" fill="#2a78d6"/>
+<rect x="502.7" y="280.9" width="7.3" height="33.1" rx="2" fill="#2a78d6"/>
+<rect x="512.0" y="282.1" width="7.3" height="31.9" rx="2" fill="#2a78d6"/>
+<rect x="521.3" y="283.1" width="7.3" height="30.9" rx="2" fill="#2a78d6"/>
+<rect x="530.7" y="283.2" width="7.3" height="30.8" rx="2" fill="#2a78d6"/>
+<rect x="540.0" y="284.4" width="7.3" height="29.6" rx="2" fill="#2a78d6"/>
+<rect x="549.3" y="285.2" width="7.3" height="28.8" rx="2" fill="#2a78d6"/>
+<rect x="558.7" y="286.3" width="7.3" height="27.7" rx="2" fill="#2a78d6"/>
+<rect x="568.0" y="287.5" width="7.3" height="26.5" rx="2" fill="#2a78d6"/>
+<rect x="577.3" y="290.2" width="7.3" height="23.8" rx="2" fill="#2a78d6"/>
+<rect x="586.7" y="290.4" width="7.3" height="23.6" rx="2" fill="#2a78d6"/>
+<rect x="596.0" y="291.3" width="7.3" height="22.7" rx="2" fill="#2a78d6"/>
+<rect x="605.3" y="294.0" width="7.3" height="20.0" rx="2" fill="#2a78d6"/>
+<rect x="614.7" y="295.5" width="7.3" height="18.5" rx="2" fill="#2a78d6"/>
+<rect x="624.0" y="296.8" width="7.3" height="17.2" rx="2" fill="#2a78d6"/>
+<rect x="633.3" y="297.8" width="7.3" height="16.2" rx="2" fill="#2a78d6"/>
+<rect x="642.7" y="298.3" width="7.3" height="15.7" rx="2" fill="#2a78d6"/>
+<text x="180.7" y="336" font-size="11" fill="#52514e" text-anchor="middle">10</text>
+<text x="274.0" y="336" font-size="11" fill="#52514e" text-anchor="middle">20</text>
+<text x="367.3" y="336" font-size="11" fill="#52514e" text-anchor="middle">30</text>
+<text x="460.7" y="336" font-size="11" fill="#52514e" text-anchor="middle">40</text>
+<text x="554.0" y="336" font-size="11" fill="#52514e" text-anchor="middle">50</text>
+<text x="647.3" y="336" font-size="11" fill="#52514e" text-anchor="middle">60</text>
+<text x="372" y="360" font-size="12" fill="#52514e" text-anchor="middle">ordem de escolha</text>
+</svg>
