@@ -249,7 +249,7 @@ def mostrar_mochila(inst: Instancia) -> None:
  
     col1, col2, col3 = st.columns(3)
     col1.metric("Unidades escolhidas", f"{len(resultado.escolhidas)}")
-    col2.metric("Custo usado", f"R$ {_formatar(resultado.custo_total)}")
+    col2.metric("Custo (R$)", _formatar(resultado.custo_total))
     col3.metric("Valor (pop. local somada)", _formatar(resultado.valor_total))
  
     otimo = otimo_mochila(valores, custos, orcamento)

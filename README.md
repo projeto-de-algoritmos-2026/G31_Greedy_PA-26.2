@@ -33,11 +33,66 @@ resposta — e que é a pergunta de um gestor com orçamento.
 
 ## O algoritmo
 
-A cada passo, escolha a unidade que adiciona mais gente ainda não coberta. É um
-algoritmo guloso, e carrega uma garantia demonstrada: sempre atinge pelo menos
-**1 − 1/e ≈ 63,2%** do ótimo, para qualquer instância.
+A cada passo, escolha a unidade que adiciona mais gente **ainda não coberta**.
+É um algoritmo guloso, e carrega uma garantia demonstrada: sempre atinge pelo
+menos **1 − 1/e ≈ 63,2%** do ótimo, para qualquer instância.
 
-*(seção a ser detalhada)*
+### Por que "ainda não coberta" é a palavra que importa
+
+A tentação é escolher as unidades que cobrem mais gente **sozinhas**. Isso
+ignora que duas unidades vizinhas atendem **as mesmas** pessoas: a segunda
+parece valer 100 mil habitantes e, somada à primeira, acrescenta quase nada. O
+guloso olha o **ganho marginal** — quantos habitantes entram que ainda não
+estavam na conta — e é só nisso que ele difere da escolha ingênua. A seção
+[Validação](#validação) mede essa diferença: com vinte unidades, 52,2% contra
+28,4%.
+
+### O laço, em `src/guloso.py`
+
+São `k` rodadas. Em cada uma, percorre as unidades ainda não escolhidas,
+calcula quantos habitantes novos cada uma traria, e fica com a melhor. Empate
+vai para o menor índice, o que torna o resultado reproduzível.
+
+A função `historico` devolve a trilha inteira — a unidade escolhida em cada
+rodada, o ganho daquela rodada, o acumulado e quais setores entraram. É dela
+que saem o gráfico do ganho marginal e as curvas de cobertura; `guloso` é só a
+lista de unidades, e `populacao_coberta` o número final.
+
+**Custo:** `k` rodadas × `n` unidades × os setores que cada uma alcança — com
+`n` igual a 200 e mediana de 71 setores por unidade, são 0,02 s para `k = 20` e
+0,04 s para `k = 60`.
+
+### A garantia, e de onde ela vem
+
+Cada unidade nova acrescenta menos que a anterior, porque o que ela cobre já
+vai estando coberto. Essa propriedade chama-se **submodularidade**, e é dela
+que Nemhauser, Wolsey e Fisher tiraram, em 1978, o limite de 1 − 1/e para o
+guloso em cobertura máxima. O gráfico do ganho marginal, na seção de validação,
+é essa propriedade desenhada.
+
+A garantia é um **piso para o pior caso imaginável**, não uma previsão. Nas
+instâncias reais deste trabalho o guloso ficou em 99,95% do ótimo.
+
+### A força bruta, em `src/exato.py`
+
+Para saber a que distância do ótimo o guloso está, é preciso conhecer o ótimo.
+O `exato` testa **todas** as combinações de `k` unidades entre `n` e fica com a
+melhor — resposta certa por construção, e por isso a régua.
+
+Ele testa combinações de tamanho exatamente `k`, e não "até `k`": como nenhuma
+população é negativa, acrescentar unidade nunca piora a cobertura, então
+alguma solução ótima de tamanho `k` sempre existe.
+
+**O preço é o fatorial.** São C(`n`, `k`) combinações. Com as 200 unidades:
+
+| `k` | combinações | tempo |
+| --- | --- | --- |
+| 2 | 19.900 | 0,14 s |
+| 3 | 1.313.400 | 14 s |
+| 8 | 55.098.996.177.225 | cerca de 18 anos |
+
+É por isso que a comparação com o ótimo roda em instâncias reduzidas, com 20 a
+30 candidatos, e é por isso que o guloso existe.
 
 ## Os dados
 
@@ -135,8 +190,8 @@ pessoas. O guloso olha o ganho marginal, não o tamanho absoluto, e essa é a
 ### 2. Quão longe ele fica do ótimo?
 
 Na instância completa não dá para saber: com 200 unidades, `k = 3` já são
-1.313.400 combinações e cerca de 107 segundos, e `k = 8` seriam
-55.098.996.177.225 combinações — no mesmo ritmo, mais de cento e quarenta anos.
+1.313.400 combinações e cerca de catorze segundos, e `k = 8` seriam
+55.098.996.177.225 combinações — no mesmo ritmo, cerca de dezoito anos.
 
 Então comparamos em **doze instâncias reduzidas**, com 20 a 30 candidatos e `k`
 de 2 a 4, onde a força bruta de `src/exato.py` termina.
@@ -257,7 +312,7 @@ A validação completa gera os três gráficos, a tabela e os dados brutos em
 `resultados/`:
 
 ```bash
-python validacao.py                 # leva uns vinte segundos
+python validacao.py                 # leva uns quatro segundos
 python validacao.py --raio 3 --kmax 80
 ```
 

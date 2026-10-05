@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass
+from functools import cached_property
 
 from src.dados import Setor, Unidade, carregar_setores, carregar_unidades
 from src.geometria import distancia_km
@@ -14,7 +15,7 @@ class Instancia:
     coberturas: list[frozenset[int]]
     raio_km: float
 
-    @property
+    @cached_property
     def pesos(self) -> list[int]:
         return [s.populacao for s in self.setores]
 
