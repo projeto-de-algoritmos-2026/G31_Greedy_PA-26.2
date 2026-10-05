@@ -34,7 +34,7 @@ def _dados_disponiveis() -> bool:
 def mostrar_instrucoes_de_dados() -> None:
     st.error("Dados brutos não encontrados em `data/raw/`.")
     st.markdown(
-        "Baixe os dois arquivos conforme `data/README.md` e coloque em "
+        "Baixe os dois arquivos conforme o README e coloque em "
         "`data/raw/`:\n\n"
         "- **UBS** (CNES): "
         "[dadosabertos.saude.gov.br](https://dadosabertos.saude.gov.br/"
@@ -101,7 +101,8 @@ def mostrar_resultado_guloso(inst: Instancia, passos: list[PassoGuloso]) -> None
     )
     st.bar_chart(
         pd.DataFrame({"Ganho marginal": [p.ganho for p in passos]},
-                     index=[inst.unidades[p.unidade].nome for p in passos]),
+                     index=pd.Index(range(1, len(passos) + 1),
+                                    name="ordem de escolha")),
     )
  
  

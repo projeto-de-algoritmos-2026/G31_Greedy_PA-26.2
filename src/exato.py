@@ -60,7 +60,7 @@ def _main(argv: list[str]) -> int:
     try:
         inst = carregar(raio)
     except FileNotFoundError as erro:
-        print(f"não encontrei {erro} — veja data/README.md", file=sys.stderr)
+        print(f"não encontrei {erro} — veja o README", file=sys.stderr)
         return 1
     except ImportError as erro:
         print(erro, file=sys.stderr)

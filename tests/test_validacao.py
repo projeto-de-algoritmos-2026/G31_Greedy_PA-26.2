@@ -1,5 +1,3 @@
-
-
 import contextlib
 import io
 import json
@@ -105,7 +103,6 @@ class TestGraficos(unittest.TestCase):
             self.assertIn(nome, svg, f"o rótulo de {nome} sumiu")
 
     def test_caractere_especial_no_rotulo_nao_quebra_o_xml(self):
-        """"aleatórias" tem acento, e um "&" num nome quebraria o SVG."""
         svg = grafico_curva(self.series, self.total, 2.0)
         ET.fromstring(svg)
         self.assertNotIn("&a", svg.replace("&amp;", ""))
@@ -127,7 +124,7 @@ class TestMapa(unittest.TestCase):
         self.assertIn(SEM_COBERTURA, svg)
 
     def test_sem_nenhuma_escolhida_nao_quebra(self):
-  
+
         svg = grafico_mapa(self.inst, [])
         ET.fromstring(svg)
         self.assertIn(SEM_COBERTURA, svg)
@@ -163,7 +160,7 @@ class TestDesenharMapa(unittest.TestCase):
 
 
     def _desenhar(self, inst, base, k) -> str:
-  
+
         saida = io.StringIO()
         with contextlib.redirect_stdout(saida):
             _desenhar_mapa(inst, base, k)
@@ -186,7 +183,6 @@ class TestDesenharMapa(unittest.TestCase):
         self.assertIn(f"{coberta:,}".replace(",", "."), impresso)
 
     def test_dois_k_diferentes_nao_se_apagam(self):
-        """É o motivo de o `k` estar no nome do arquivo."""
         inst = instancia_pequena()
         with tempfile.TemporaryDirectory() as pasta:
             base = Path(pasta) / "v_raio2"
@@ -196,7 +192,7 @@ class TestDesenharMapa(unittest.TestCase):
         self.assertEqual(gravados, ["v_raio2_mapa_k2.svg", "v_raio2_mapa_k4.svg"])
 
     def test_o_atalho_do_guloso_bate_com_o_historico(self):
-  
+
         inst = instancia_pequena()
         self.assertEqual(guloso(inst, 3),
                          [p.unidade for p in historico(inst, 3)])

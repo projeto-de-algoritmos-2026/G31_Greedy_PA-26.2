@@ -1,4 +1,3 @@
-
 import unittest
 
 from src.cobertura import Instancia, montar
@@ -6,7 +5,7 @@ from src.dados import ARQUIVO_SETORES, ARQUIVO_UBS, Setor, Unidade
 
 def _tem_pyshp() -> bool:
     try:
-        import shapefile  # noqa: F401
+        import shapefile
     except ImportError:
         return False
     return True
@@ -32,9 +31,9 @@ class TestMontar(unittest.TestCase):
     def setUp(self):
         self.unidades = [unidade("A", -15.80, -47.90), unidade("B", -15.90, -47.90)]
         self.setores = [
-            setor("perto_de_A", -15.805, -47.90, 100),   # ~0,55 km de A
-            setor("perto_de_B", -15.895, -47.90, 200),   # ~0,55 km de B
-            setor("longe",      -15.50, -47.90, 300),    # ~33 km de A
+            setor("perto_de_A", -15.805, -47.90, 100),
+            setor("perto_de_B", -15.895, -47.90, 200),
+            setor("longe",      -15.50, -47.90, 300),
         ]
 
     def test_raio_pequeno_separa_os_dois_grupos(self):
@@ -76,7 +75,6 @@ class TestContas(unittest.TestCase):
         self.assertEqual(self.inst.populacao_total, 600)
 
     def test_populacao_alcancavel_e_menor_que_o_total(self):
-        """O teto do problema não é a população inteira."""
         self.assertEqual(self.inst.populacao_alcancavel, 300)
         self.assertLess(self.inst.populacao_alcancavel, self.inst.populacao_total)
 
@@ -106,11 +104,6 @@ class TestComDadosReais(unittest.TestCase):
         self.assertEqual(len(self.inst.setores), 5418)
 
     def test_nem_toda_populacao_e_alcancavel(self):
-        """
-        Com raio de 2 km, as 200 unidades juntas chegam a cerca de 90% do
-        DF. É por isso que o problema é de cobertura MÁXIMA e não de
-        cobertura de conjuntos: não existe solução que cubra todo mundo.
-        """
         fracao = self.inst.populacao_alcancavel / self.inst.populacao_total
         self.assertLess(fracao, 1.0)
         self.assertAlmostEqual(fracao, 0.90, delta=0.03)

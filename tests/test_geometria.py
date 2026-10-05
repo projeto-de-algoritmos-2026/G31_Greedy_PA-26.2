@@ -1,5 +1,3 @@
-
-
 import math
 import unittest
 
@@ -57,7 +55,7 @@ class TestDistancia(unittest.TestCase):
         self.assertAlmostEqual(d, 870, delta=15)
 
     def test_um_grau_de_latitude_vale_111_km(self):
- 
+
         self.assertAlmostEqual(distancia_km(-15.0, -47.9, -16.0, -47.9), 111.2, delta=0.5)
 
     def test_um_grau_de_longitude_encolhe_longe_do_equador(self):

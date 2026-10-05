@@ -1,24 +1,3 @@
-"""
-Validação: o guloso vale a pena?
-
-    python validacao.py
-    python validacao.py --raio 3 --kmax 80
-    python validacao.py --so-mapa --kmapa 40
-
-A rodada completa leva uns vinte segundos, quase todos na força bruta. O
-`--so-mapa` pula tudo e desenha só o mapa, em cerca de um segundo — é o
-modo de olhar o resultado mudando de `k` e de raio sem esperar.
-
-Responde três perguntas, nesta ordem de importância:
-
-1. O guloso ganha das escolhas óbvias? (contra as linhas de base)
-2. Quão longe ele fica do ótimo? (contra a força bruta, em instâncias
-   reduzidas — na instância completa isso é inviável)
-3. O ganho de cada unidade nova diminui? (a submodularidade, que é a
-   propriedade de onde sai a garantia de 1−1/e)
-
-Grava gráficos, tabela e dados brutos em `resultados/`.
-"""
 from __future__ import annotations
 
 import argparse
@@ -36,17 +15,13 @@ from src.linhas_base import LINHAS_DE_BASE
 
 SAIDA = Path("resultados")
 
-#: Superfície clara e tokens de texto. Validados com
-#: `scripts/validate_palette.js --mode light`.
+
 SURFACE = "#fcfcfb"
 TEXTO = "#0b0b0b"
 TEXTO_2 = "#52514e"
 GRADE = "#e4e3df"
 
-#: Slots 1 a 4 da paleta categórica. O guloso fica no slot 1; as linhas de
-#: base nos seguintes. Dois deles ficam abaixo de 3:1 de contraste na
-#: superfície clara, o que obriga rótulo visível — por isso cada série é
-#: rotulada diretamente, sem caixa de legenda.
+
 COR = {
     "guloso": "#2a78d6",
     "maiores sozinhas": "#eb6834",
@@ -54,21 +29,15 @@ COR = {
     "mais centrais": "#eda100",
 }
 
-#: No mapa só há duas categorias, e a segunda é ausência: setor que
-#: ninguém alcança fica em cinza neutro, nunca numa segunda cor da paleta.
-#: Um cinza vale "sem dado"; uma cor valeria "outra coisa". Este tom é o
-#: mais claro que ainda passa de 3:1 de contraste na superfície clara.
+
 SEM_COBERTURA = "#8b8984"
 
-#: Um grau de latitude são 111 km em qualquer lugar. É o mesmo número que
-#: a `geometria` usa implicitamente pelo raio da Terra, e aqui serve só
-#: para desenhar o raio de cobertura na escala certa.
+
 KM_POR_GRAU = 111.0
 
 
 @dataclass
 class Comparacao:
-    """O guloso contra o ótimo, numa instância reduzida."""
     candidatos: int
     k: int
     guloso: int
@@ -80,13 +49,6 @@ class Comparacao:
 
 
 def curva(inst: Instancia, kmax: int) -> dict[str, list[int]]:
-    """
-    População coberta por cada estratégia, para k de 1 até kmax.
-
-    O guloso sai de uma passada só: `historico` já devolve o acumulado de
-    cada rodada. As linhas de base precisam ser recalculadas por k, porque
-    não são incrementais — a melhor escolha de 10 não contém a de 9.
-    """
     passos = historico(inst, kmax)
     series = {"guloso": [p.acumulado for p in passos]}
 
@@ -100,23 +62,12 @@ def curva(inst: Instancia, kmax: int) -> dict[str, list[int]]:
 
 def contra_o_otimo(inst: Instancia, instancias: int = 12,
                    semente: int = 42) -> list[Comparacao]:
-    """
-    Compara guloso e ótimo em instâncias reduzidas.
-
-    Na instância completa a força bruta é inviável. Com 200 unidades,
-    k = 3 são 1.313.400 combinações e levam cerca de 107 segundos — uns
-    80 microssegundos cada. Em k = 8 são 55.098.996.177.225 combinações,
-    e no mesmo ritmo isso passa de cento e quarenta anos.
-
-    Por isso sorteamos subconjuntos de candidatos pequenos o bastante
-    para o ótimo ser calculável.
-    """
     sorteio = random.Random(semente)
     disponiveis = len(inst.unidades)
     comparacoes = []
     for _ in range(instancias):
-        # os tamanhos abaixo são os da instância real; numa menor, o que
-        # houver. Sem isto, `sample` estoura em instância pequena.
+
+
         m = min(sorteio.choice([20, 25, 30]), disponiveis)
         k = min(sorteio.choice([2, 3, 4]), m)
         indices = sorteio.sample(range(disponiveis), m)
@@ -136,11 +87,10 @@ def _escapar(texto: str) -> str:
 
 
 def grafico_curva(series: dict[str, list[int]], total: int, raio: float) -> str:
-    """Linhas: população coberta conforme o número de unidades cresce."""
     L, T = 92, 74
     larg, alt = 560, 300
-    # 176 à direita, e não 150: o rótulo mais longo é
-    # "maiores sozinhas · 58%", que encostava na borda
+
+
     W, H = L + larg + 176, T + alt + 64
     kmax = len(series["guloso"])
     teto = max(max(v) for v in series.values()) / total
@@ -181,8 +131,8 @@ def grafico_curva(series: dict[str, list[int]], total: int, raio: float) -> str:
         p.append(f'<polyline points="{pontos}" fill="none" stroke="{COR[nome]}" '
                  f'stroke-width="{largura}" stroke-linejoin="round" '
                  f'stroke-linecap="round"/>')
-        # rótulo direto em vez de caixa de legenda; duas cores da paleta
-        # ficam abaixo de 3:1 na superfície clara e exigem rótulo visível
+
+
         yr = y(valores[-1] / total) + 4 + (i - 1.5) * 2
         p.append(f'<text x="{L+larg+10}" y="{yr:.1f}" font-size="12" '
                  f'font-weight="{600 if nome == "guloso" else 400}" '
@@ -196,7 +146,6 @@ def grafico_curva(series: dict[str, list[int]], total: int, raio: float) -> str:
 
 
 def grafico_ganho(passos, total: int) -> str:
-    """Barras: quanto cada unidade nova acrescenta. Deve cair sempre."""
     L, T = 92, 74
     larg, alt = 560, 240
     W, H = L + larg + 40, T + alt + 64
@@ -223,7 +172,7 @@ def grafico_ganho(passos, total: int) -> str:
     for i, passo in enumerate(passos):
         h = (passo.ganho / total) / topo * alt
         xx = L + i * (larg / n)
-        # 2px de folga entre barras, e topo arredondado ancorado na base
+
         p.append(f'<rect x="{xx:.1f}" y="{T+alt-h:.1f}" width="{largura_barra:.1f}" '
                  f'height="{max(h, 0.5):.1f}" rx="2" fill="{COR["guloso"]}"/>')
 
@@ -238,20 +187,6 @@ def grafico_ganho(passos, total: int) -> str:
 
 
 def grafico_mapa(inst: Instancia, escolhidas: list[int]) -> str:
-    """
-    O mapa do DF: um ponto por setor censitário, azul se coberto.
-
-    A projeção é a mais simples que não distorce: multiplicar a longitude
-    pelo cosseno da latitude. Num território de 60 por 96 km a curvatura
-    da Terra não aparece, e um mapa de verdade exigiria biblioteca de GIS
-    — que o projeto inteiro evita de propósito.
-
-    O ponto é o centroide do setor, e o tamanho vai com a raiz da
-    população: a raiz, e não a população, porque o olho lê **área**, e
-    área cresce com o quadrado do raio. Com população direta no raio, um
-    setor de dez mil habitantes viraria uma bolha vinte vezes maior do
-    que é.
-    """
     L, T = 24, 78
     larg, alt = 620, 392
     W, H = L + larg + 24, T + alt + 52
@@ -260,10 +195,7 @@ def grafico_mapa(inst: Instancia, escolhidas: list[int]) -> str:
     cos_lat = math.cos(math.radians(
         sum(s.lat for s in setores) / len(setores)))
 
-    # o enquadramento sai só dos setores, que não mudam com o `k`. Se as
-    # escolhidas entrassem na conta, cada `k` daria um recorte diferente e
-    # dois mapas lado a lado deixariam de ser comparáveis — que é
-    # justamente para o que eles servem.
+
     lat_min = min(s.lat for s in setores)
     lat_max = max(s.lat for s in setores)
     lon_min = min(s.lon for s in setores)
@@ -271,7 +203,7 @@ def grafico_mapa(inst: Instancia, escolhidas: list[int]) -> str:
 
     vao_x = max((lon_max - lon_min) * cos_lat, 1e-9)
     vao_y = max(lat_max - lat_min, 1e-9)
-    # a mesma escala nos dois eixos, senão o DF sai esticado
+
     escala = min(larg / vao_x, alt / vao_y)
     folga_x = (larg - vao_x * escala) / 2
     folga_y = (alt - vao_y * escala) / 2
@@ -296,8 +228,7 @@ def grafico_mapa(inst: Instancia, escolhidas: list[int]) -> str:
          + ' setores censitários · o tamanho do ponto é a população · '
          f'raio de {inst.raio_km:g} km</text>']
 
-    # o alcance de cada escolhida, por baixo de tudo: é ele que explica
-    # por que os pontos ficaram azuis
+
     raio_px = inst.raio_km / KM_POR_GRAU * escala
     for j in escolhidas:
         p.append(f'<circle cx="{x(unidades[j].lon):.1f}" '
@@ -305,7 +236,7 @@ def grafico_mapa(inst: Instancia, escolhidas: list[int]) -> str:
                  f'fill="{COR["guloso"]}" fill-opacity="0.07" '
                  f'stroke="{COR["guloso"]}" stroke-opacity="0.25" stroke-width="1"/>')
 
-    # setores sem cobertura primeiro, para o azul ficar por cima
+
     for coberto in (False, True):
         cor = COR["guloso"] if coberto else SEM_COBERTURA
         for i, s in enumerate(setores):
@@ -315,8 +246,7 @@ def grafico_mapa(inst: Instancia, escolhidas: list[int]) -> str:
             p.append(f'<circle cx="{x(s.lon):.1f}" cy="{y(s.lat):.1f}" '
                      f'r="{r:.1f}" fill="{cor}"/>')
 
-    # as escolhidas por cima, com anel da própria superfície para não
-    # sumirem dentro da nuvem de pontos
+
     for j in escolhidas:
         p.append(f'<circle cx="{x(unidades[j].lon):.1f}" '
                  f'cy="{y(unidades[j].lat):.1f}" r="4" fill="{TEXTO}" '
@@ -372,13 +302,6 @@ def tabela(series: dict[str, list[int]], total: int,
 
 
 def _desenhar_mapa(inst: Instancia, base: Path, k: int) -> int:
-    """
-    Grava o mapa de `k` unidades e devolve o código de saída.
-
-    O nome do arquivo leva o `k` justamente para `--so-mapa` poder ser
-    chamado várias vezes sem uma rodada apagar a anterior: k = 5, 20 e 60
-    lado a lado mostram o azul se espalhando.
-    """
     escolhidas = guloso(inst, k)
     destino = base.with_name(f"{base.name}_mapa_k{k}.svg")
     destino.write_text(grafico_mapa(inst, escolhidas), encoding="utf-8")
@@ -392,7 +315,7 @@ def _desenhar_mapa(inst: Instancia, base: Path, k: int) -> int:
 
 
 def _main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().splitlines()[0])
+    ap = argparse.ArgumentParser(description="Validação: o guloso vale a pena?")
     ap.add_argument("--raio", type=float, default=2.0, help="raio de cobertura em km")
     ap.add_argument("--kmax", type=int, default=60, help="até quantas unidades")
     ap.add_argument("--instancias", type=int, default=12,
@@ -407,7 +330,7 @@ def _main(argv: list[str] | None = None) -> int:
     try:
         inst = carregar(args.raio)
     except FileNotFoundError as erro:
-        print(f"não encontrei {erro} — veja data/README.md", file=sys.stderr)
+        print(f"não encontrei {erro} — veja o README", file=sys.stderr)
         return 1
     except ImportError as erro:
         print(erro, file=sys.stderr)

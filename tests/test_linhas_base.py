@@ -1,4 +1,3 @@
-
 import unittest
 
 from src.cobertura import montar
@@ -9,7 +8,7 @@ from src.linhas_base import (LINHAS_DE_BASE, aleatorias, centro_populacional,
 
 def _tem_pyshp() -> bool:
     try:
-        import shapefile  # noqa: F401
+        import shapefile
     except ImportError:
         return False
     return True
@@ -43,7 +42,6 @@ class TestMaioresSozinhas(unittest.TestCase):
         )
 
     def test_escolhe_as_duas_sobrepostas(self):
-        """É o comportamento esperado da linha de base — e o erro dela."""
         self.assertEqual(set(maiores_sozinhas(self.inst, 2)), {0, 1})
 
     def test_e_por_isso_cobre_menos_que_a_escolha_esperta(self):
@@ -156,7 +154,6 @@ class TestComDadosReais(unittest.TestCase):
         self.assertTrue(-48.35 <= lon <= -47.25)
 
     def test_nenhuma_linha_de_base_cobre_o_impossivel(self):
-        """Nenhuma pode passar do que todas as unidades juntas alcançam."""
         teto = self.inst.populacao_alcancavel
         for nome, escolher in LINHAS_DE_BASE.items():
             coberta = self.inst.populacao_de(self.inst.cobertos_por(escolher(self.inst, 20)))

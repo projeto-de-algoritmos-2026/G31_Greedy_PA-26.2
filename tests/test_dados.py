@@ -1,4 +1,3 @@
-
 import unittest
 from pathlib import Path
 
@@ -7,25 +6,23 @@ from src.dados import (ARQUIVO_SETORES, ARQUIVO_UBS, LAT_DF, LON_DF, _no_df,
 
 def _tem_pyshp() -> bool:
     try:
-        import shapefile  # noqa: F401
+        import shapefile
     except ImportError:
         return False
     return True
 
 
 TEM_UBS = ARQUIVO_UBS.exists()
-#: O shapefile só é legível com as duas coisas: o arquivo e a biblioteca.
+
 TEM_SETORES = ARQUIVO_SETORES.with_suffix(".shp").exists() and _tem_pyshp()
 
 
 class TestNumero(unittest.TestCase):
-    """A base do CNES mistura ponto e vírgula decimal na mesma linha."""
 
     def test_ponto_decimal(self):
         self.assertAlmostEqual(_numero("-15.7939"), -15.7939)
 
     def test_virgula_decimal(self):
-        """É assim que toda LONGITUDE vem no arquivo nacional."""
         self.assertAlmostEqual(_numero("-47,8828"), -47.8828)
 
     def test_espacos_em_volta(self):
@@ -51,7 +48,6 @@ class TestCaixaDoDF(unittest.TestCase):
         self.assertFalse(_no_df(-23.5505, -46.6333))
 
     def test_zero_zero_fica_de_fora(self):
-        """(0, 0) é o sintoma clássico de coordenada faltando."""
         self.assertFalse(_no_df(0.0, 0.0))
 
 
@@ -91,7 +87,6 @@ class TestSetores(unittest.TestCase):
         self.assertEqual(len(self.setores), 5418)
 
     def test_populacao_bate_com_o_censo(self):
-        """Total do DF no Censo 2022. Se mudar, a coluna lida mudou."""
         self.assertEqual(sum(s.populacao for s in self.setores), 2_817_381)
 
     def test_todo_centroide_cai_dentro_do_df(self):

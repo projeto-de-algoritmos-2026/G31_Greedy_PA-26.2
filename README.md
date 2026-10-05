@@ -41,11 +41,15 @@ algoritmo guloso, e carrega uma garantia demonstrada: sempre atinge pelo menos
 
 ## Os dados
 
-Nenhum dos dois arquivos é versionado — são grandes e públicos. As instruções de
-download, com os números esperados para conferência, estão em
-[`data/README.md`](data/README.md).
+Nenhum dos dois arquivos é versionado — são grandes e públicos. Baixe os dois
+abaixo em `data/raw/` antes de rodar o projeto. Rodar `python -m src.dados` sem
+eles imprime os mesmos links.
 
 ### Unidades de saúde — CNES, Ministério da Saúde
+
+<https://dadosabertos.saude.gov.br/dataset/unidades-basicas-de-saude-ubs>
+
+Baixe o CSV e salve como `data/raw/Unidades_Basicas_Saude-UBS.csv`.
 
 | | |
 | --- | --- |
@@ -67,11 +71,20 @@ Duas armadilhas, as duas com teste próprio em `tests/test_dados.py`:
 
 ### População — Censo 2022, IBGE
 
+<https://ftp.ibge.gov.br/Censos/Censo_Demografico_2022/Agregados_por_Setores_Censitarios/malha_com_atributos/setores/shp/UF/DF/DF_setores_CD2022.zip>
+
+**Descompacte o arquivo**, deixando os cinco arquivos (`.shp`, `.dbf`, `.shx`,
+`.prj`, `.cpg`) soltos em `data/raw/`. São só 2,5 MB: é o arquivo do DF, não o
+nacional. O `.dbf` já traz os 36 atributos junto da geometria, então **não é
+preciso baixar o CSV nacional de 102 MB** — a população sai do próprio
+shapefile.
+
 | | |
 | --- | --- |
 | Setores censitários no DF | **5.418** |
 | População | **2.817.381** |
 | Urbanos / rurais | 5.021 / 397 |
+| Sem população | 76 |
 | Regiões administrativas | 33 |
 
 Confirmamos que a coluna `v0001` é mesmo a população residente somando-a no país
@@ -169,22 +182,45 @@ básica de saúde. A resposta honesta é mostrar que a escolha muda o resultado:
 | 40 | 37,2% | 74,4% | 90,2% |
 | todas as 200 | 62,8% | 90,3% | 95,3% |
 
-
-
 ## Extensão: Mochila (orçamento em R$)
 
- O guloso principal usa um orçamento em número de unidades — todas "custam" 1. Isso não é realista: abrir ou manter uma UBS tem custo variável (porte, equipe, infraestrutura). src/mochila.py troca a contagem por um orçamento em reais, o que transforma o problema em Mochila 0/1 clássica.
+O guloso principal usa um orçamento em número de unidades — todas "custam" 1.
+Isso não é realista: abrir ou manter uma UBS tem custo variável (porte, equipe,
+infraestrutura). O `src/mochila.py` troca a contagem por um orçamento em reais,
+o que transforma o problema em Mochila 0/1 clássica.
 
-Entre os problemas gulosos vistos na disciplina (Interval Scheduling, Interval Partitioning, Minimize Lateness, Knapsack, Troco de moedas, roteamento tipo caixeiro-viajante, Huffman), Mochila foi o único com encaixe honesto: os outros exigiriam inventar uma dimensão de tempo, denominação monetária ou rota que os dados não têm — o mesmo motivo pelo qual a AGM ficou fora do T1 deste grupo.
+Entre os problemas gulosos vistos na disciplina (Interval Scheduling, Interval
+Partitioning, Minimize Lateness, Knapsack, Troco de moedas, roteamento tipo
+caixeiro-viajante, Huffman), Mochila foi o único com encaixe honesto: os outros
+exigiriam inventar uma dimensão de tempo, denominação monetária ou rota que os
+dados não têm — o mesmo motivo pelo qual a AGM ficou fora do T1 deste grupo.
 
 Três decisões, ditas com todas as letras:
 
-Custo simulado, não real. O CNES não publica custo de manutenção por unidade. custo_simulado() gera um valor determinístico (semente fixa), proporcional ao número de setores que a unidade alcança — documentado como ilustrativo, nunca confundido com o resto do projeto, que é todo dado real.
-"Valor" é outra métrica, de propósito. Mochila de livro-texto exige valores fixos e independentes por item; a população coberta com raio se sobrepõe entre unidades (o mesmo motivo de o guloso principal olhar ganho marginal), então não serve aqui. Usamos a população do setor censitário mais próximo de cada unidade — uma pergunta diferente ("que unidades priorizar olhando só o entorno imediato"), não uma Cobertura Máxima disfarçada de Mochila.
-A garantia é mais fraca, e isso é o ponto de comparação. Guloso por razão valor/custo, sozinho, não tem garantia nenhuma — um item caro e valioso pode ficar de fora mesmo valendo mais que vários itens baratos somados. Com a correção clássica (comparar com o melhor item isolado que cabe no orçamento e ficar com o maior dos dois), a garantia sobe para pelo menos 1/2 do ótimo (Kleinberg & Tardos, cap. 11) — mais fraca que o 1 − 1/e da Cobertura Máxima, porque falta a submodularidade que sustenta aquela garantia.
+- **Custo simulado, não real.** O CNES não publica custo de manutenção por
+  unidade. O `custo_simulado()` gera um valor determinístico (semente fixa),
+  proporcional ao número de setores que a unidade alcança — documentado como
+  ilustrativo, nunca confundido com o resto do projeto, que é todo dado real.
 
-Validado contra a instância clássica de livro-texto (Kleinberg & Tardos) e contra a programação dinâmica exata em 30 instâncias sintéticas aleatórias, em tests/test_mochila.py.
+- **"Valor" é outra métrica, de propósito.** Mochila de livro-texto exige
+  valores fixos e independentes por item; a população coberta com raio se
+  sobrepõe entre unidades (o mesmo motivo de o guloso principal olhar ganho
+  marginal), então não serve aqui. Usamos a população do setor censitário mais
+  próximo de cada unidade — uma pergunta diferente ("que unidades priorizar
+  olhando só o entorno imediato"), não uma Cobertura Máxima disfarçada de
+  Mochila.
 
+- **A garantia é mais fraca, e isso é o ponto de comparação.** Guloso por razão
+  valor/custo, sozinho, não tem garantia nenhuma — um item caro e valioso pode
+  ficar de fora mesmo valendo mais que vários itens baratos somados. Com a
+  correção clássica (comparar com o melhor item isolado que cabe no orçamento e
+  ficar com o maior dos dois), a garantia sobe para pelo menos **1/2 do ótimo**
+  — mais fraca que o 1 − 1/e da Cobertura Máxima, porque falta a
+  submodularidade que sustenta aquela garantia.
+
+Validado contra a instância clássica de livro-texto e contra a programação
+dinâmica exata em 30 instâncias sintéticas aleatórias, em
+`tests/test_mochila.py`.
 
 ## Instalação
 
@@ -196,14 +232,25 @@ source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-Depois baixe os dados conforme [`data/README.md`](data/README.md).
+Depois baixe os dados conforme a seção **Os dados** acima.
 
 ## Uso
+
+A interface, com controles de raio e de `k`:
+
+```bash
+streamlit run app.py
+```
+
+Os módulos também rodam sozinhos pela linha de comando:
 
 ```bash
 python -m src.dados                 # confere o carregamento das duas bases
 python -m src.cobertura 2           # quem cobre quem, a um raio de 2 km
+python -m src.guloso 20 2           # o algoritmo: 20 unidades, raio de 2 km
+python -m src.exato 3 2             # a força bruta (só para k pequeno)
 python -m src.linhas_base 20        # as escolhas óbvias, para comparar
+python -m src.mochila 300000 2      # a extensão: orçamento de R$ 300 mil
 ```
 
 A validação completa gera os três gráficos, a tabela e os dados brutos em
@@ -227,7 +274,7 @@ python validacao.py --so-mapa --kmapa 20
 python -m unittest discover
 ```
 
-São 99 testes. Os que dependem dos arquivos brutos são pulados quando eles não
+São 111 testes. Os que dependem dos arquivos brutos são pulados quando eles não
 estão em `data/raw/`, então a suíte roda num clone recém-feito, sem download.
 
 ## Apresentação

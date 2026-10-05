@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import random
@@ -27,7 +26,6 @@ def centro_populacional(inst: Instancia) -> tuple[float, float]:
 
 
 def mais_centrais(inst: Instancia, k: int) -> list[int]:
-    """As `k` unidades mais próximas do centro populacional."""
     lat, lon = centro_populacional(inst)
     ordem = sorted(range(len(inst.unidades)),
                    key=lambda j: distancia_km(lat, lon,
@@ -72,7 +70,7 @@ def _main(argv: list[str]) -> int:
     try:
         inst = carregar(raio)
     except FileNotFoundError as erro:
-        print(f"não encontrei {erro} — veja data/README.md", file=sys.stderr)
+        print(f"não encontrei {erro} — veja o README", file=sys.stderr)
         return 1
     except ImportError as erro:
         print(erro, file=sys.stderr)

@@ -1,9 +1,8 @@
-
 from __future__ import annotations
 
 import math
 
-#: Raio médio da Terra, em quilômetros.
+
 RAIO_DA_TERRA_KM = 6371.0
 
 
@@ -34,7 +33,7 @@ def centroide(pontos: list[tuple[float, float]],
 
 
 def distancia_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
- 
+
     fi1, fi2 = math.radians(lat1), math.radians(lat2)
     dfi = fi2 - fi1
     dlambda = math.radians(lon2 - lon1)

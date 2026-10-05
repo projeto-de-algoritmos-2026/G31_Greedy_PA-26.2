@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import csv
@@ -12,17 +11,16 @@ PASTA = Path("data/raw")
 ARQUIVO_UBS = PASTA / "Unidades_Basicas_Saude-UBS.csv"
 ARQUIVO_SETORES = PASTA / "DF_setores_CD2022"
 
-#: Código do Distrito Federal na tabela de UFs do IBGE.
+
 UF_DF = "53"
 
-#: Caixa que contém o DF, com folga. Serve para pegar coordenada corrompida.
+
 LAT_DF = (-16.10, -15.45)
 LON_DF = (-48.35, -47.25)
 
 
 @dataclass(frozen=True)
 class Unidade:
-    """Uma unidade básica de saúde."""
     cnes: str
     nome: str
     bairro: str
@@ -32,7 +30,6 @@ class Unidade:
 
 @dataclass(frozen=True)
 class Setor:
-    """Um setor censitário, com a população e o centro do seu polígono."""
     codigo: str
     regiao: str
     populacao: int
@@ -42,13 +39,6 @@ class Setor:
 
 
 def _numero(texto: str | None) -> float | None:
-    """
-    Converte um número da base do CNES.
-
-    A LATITUDE vem com ponto decimal e a LONGITUDE com vírgula — não é caso
-    isolado, é o arquivo nacional inteiro. Sem trocar a vírgula, todo
-    `float()` de longitude estoura.
-    """
     if texto is None:
         return None
     texto = texto.strip().replace(",", ".")
@@ -63,14 +53,6 @@ def _no_df(lat: float, lon: float) -> bool:
 
 
 def carregar_unidades(caminho: Path = ARQUIVO_UBS) -> list[Unidade]:
-    """
-    Unidades do DF com coordenada utilizável.
-
-    Descarta as sem coordenada — 12 das 212, e entre elas há registros que
-    nem são UBS ("FISIO SEVEN", "CASA DO MARANHAO"): a base do CNES mistura
-    tipos de estabelecimento. Descarta também coordenada fora da caixa do
-    DF, que hoje não acontece mas é barato garantir.
-    """
     if not caminho.exists():
         raise FileNotFoundError(caminho)
 
@@ -92,17 +74,7 @@ def carregar_unidades(caminho: Path = ARQUIVO_UBS) -> list[Unidade]:
 
 
 def carregar_setores(caminho: Path = ARQUIVO_SETORES) -> list[Setor]:
-    """
-    Setores censitários do DF, cada um reduzido ao centro do seu polígono.
 
-    O shapefile está em SIRGAS 2000 geográfico, ou seja, já em latitude e
-    longitude — não há reprojeção a fazer. O `.dbf` traz os atributos junto,
-    então a população sai daqui mesmo, sem precisar do CSV nacional.
-
-    `v0001` é a população residente: somada no Brasil inteiro dá
-    203.080.756, que é exatamente o total do Censo 2022.
-    """
-    # importado aqui, e não no topo, para o módulo ser lido sem o pyshp
     try:
         import shapefile
     except ImportError as erro:
@@ -133,7 +105,7 @@ def carregar_setores(caminho: Path = ARQUIVO_SETORES) -> list[Setor]:
 
 def _instrucoes() -> str:
     return (
-        "Baixe os dois arquivos em data/raw/ (veja data/README.md):\n\n"
+        "Baixe os dois arquivos em data/raw/ (veja o README):\n\n"
         "  UBS      https://dadosabertos.saude.gov.br/dataset/"
         "unidades-basicas-de-saude-ubs\n"
         "  Setores  https://ftp.ibge.gov.br/Censos/Censo_Demografico_2022/"
