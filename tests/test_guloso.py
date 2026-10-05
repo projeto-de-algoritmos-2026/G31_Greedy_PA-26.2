@@ -1,4 +1,4 @@
-"""Testes do algoritmo guloso de cobertura máxima."""
+
 
 import unittest
 

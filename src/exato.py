@@ -1,12 +1,4 @@
-"""
-Busca exaustiva da solução ótima para instâncias pequenas.
 
-Para cada combinação de até `k` unidades, calcula a população coberta e
-retorna a melhor. O objetivo é servir de referência experimental para o
-guloso; não é um algoritmo para as 200 UBS reais.
-
-    python -m src.exato 8 2.0
-"""
 from __future__ import annotations
 
 import itertools

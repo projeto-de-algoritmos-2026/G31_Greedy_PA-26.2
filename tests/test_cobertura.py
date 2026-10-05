@@ -1,10 +1,3 @@
-"""
-Testes da estrutura de cobertura.
-
-A maior parte roda sobre instâncias montadas à mão, com pontos em
-coordenadas escolhidas para as distâncias serem previsíveis. Os testes que
-usam as bases reais são pulados quando os arquivos não estão presentes.
-"""
 
 import unittest
 
@@ -34,12 +27,7 @@ def setor(nome: str, lat: float, lon: float, pop: int) -> Setor:
 
 
 class TestMontar(unittest.TestCase):
-    """
-    Geometria de referência, perto do Plano Piloto.
 
-    Um grau de latitude vale ~111 km, então 0,01 grau vale ~1,11 km. Os
-    pontos abaixo ficam a distâncias conhecidas de propósito.
-    """
 
     def setUp(self):
         self.unidades = [unidade("A", -15.80, -47.90), unidade("B", -15.90, -47.90)]

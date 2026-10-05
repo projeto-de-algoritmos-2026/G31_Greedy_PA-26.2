@@ -1,16 +1,4 @@
-"""
-Algoritmo guloso para o problema de cobertura máxima.
 
-A cada passo, escolhe a unidade que acrescenta a maior quantidade de
-população ainda não coberta. A população já alcançada nunca é contada de
-novo.
-
-A entrada é uma `Instancia` de `src.cobertura`: o algoritmo não conhece
-latitude, longitude ou quilômetros; trabalha apenas com os conjuntos de
-setores e seus pesos.
-
-    python -m src.guloso 40 2.0
-"""
 from __future__ import annotations
 
 import sys
@@ -21,7 +9,6 @@ from src.cobertura import Instancia
 
 @dataclass(frozen=True)
 class PassoGuloso:
-    """Registro de uma escolha feita pelo algoritmo."""
 
     unidade: int
     ganho: int
@@ -37,19 +24,13 @@ def _validar_k(k: int) -> None:
 
 
 def _ganho(inst: Instancia, unidade: int, cobertos: set[int]) -> tuple[int, set[int]]:
-    """Retorna (ganho, setores novos) de uma unidade diante dos já cobertos."""
+
     novos = set(inst.coberturas[unidade]) - cobertos
     return inst.populacao_de(novos), novos
 
 
 def historico(inst: Instancia, k: int) -> list[PassoGuloso]:
-    """
-    Executa o guloso e devolve o histórico de cada escolha.
 
-    O campo `ganho` é a população nova trazida naquela rodada e `acumulado`
-    é a população total coberta até a rodada. Esse histórico é útil para
-    mostrar experimentalmente o ganho marginal decrescente.
-    """
     _validar_k(k)
 
     limite = min(k, len(inst.unidades))
@@ -95,16 +76,12 @@ def historico(inst: Instancia, k: int) -> list[PassoGuloso]:
 
 
 def guloso(inst: Instancia, k: int) -> list[int]:
-    """
-    Escolhe até `k` unidades pelo algoritmo guloso.
 
-    Retorna os índices das unidades na ordem em que foram escolhidas.
-    """
     return [passo.unidade for passo in historico(inst, k)]
 
 
 def populacao_coberta(inst: Instancia, k: int) -> int:
-    """Retorna a população coberta pela solução gulosa com até `k` unidades."""
+  
     escolhidas = guloso(inst, k)
     return inst.populacao_de(inst.cobertos_por(escolhidas))
 

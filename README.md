@@ -169,6 +169,23 @@ básica de saúde. A resposta honesta é mostrar que a escolha muda o resultado:
 | 40 | 37,2% | 74,4% | 90,2% |
 | todas as 200 | 62,8% | 90,3% | 95,3% |
 
+
+
+## Extensão: Mochila (orçamento em R$)
+
+ O guloso principal usa um orçamento em número de unidades — todas "custam" 1. Isso não é realista: abrir ou manter uma UBS tem custo variável (porte, equipe, infraestrutura). src/mochila.py troca a contagem por um orçamento em reais, o que transforma o problema em Mochila 0/1 clássica.
+
+Entre os problemas gulosos vistos na disciplina (Interval Scheduling, Interval Partitioning, Minimize Lateness, Knapsack, Troco de moedas, roteamento tipo caixeiro-viajante, Huffman), Mochila foi o único com encaixe honesto: os outros exigiriam inventar uma dimensão de tempo, denominação monetária ou rota que os dados não têm — o mesmo motivo pelo qual a AGM ficou fora do T1 deste grupo.
+
+Três decisões, ditas com todas as letras:
+
+Custo simulado, não real. O CNES não publica custo de manutenção por unidade. custo_simulado() gera um valor determinístico (semente fixa), proporcional ao número de setores que a unidade alcança — documentado como ilustrativo, nunca confundido com o resto do projeto, que é todo dado real.
+"Valor" é outra métrica, de propósito. Mochila de livro-texto exige valores fixos e independentes por item; a população coberta com raio se sobrepõe entre unidades (o mesmo motivo de o guloso principal olhar ganho marginal), então não serve aqui. Usamos a população do setor censitário mais próximo de cada unidade — uma pergunta diferente ("que unidades priorizar olhando só o entorno imediato"), não uma Cobertura Máxima disfarçada de Mochila.
+A garantia é mais fraca, e isso é o ponto de comparação. Guloso por razão valor/custo, sozinho, não tem garantia nenhuma — um item caro e valioso pode ficar de fora mesmo valendo mais que vários itens baratos somados. Com a correção clássica (comparar com o melhor item isolado que cabe no orçamento e ficar com o maior dos dois), a garantia sobe para pelo menos 1/2 do ótimo (Kleinberg & Tardos, cap. 11) — mais fraca que o 1 − 1/e da Cobertura Máxima, porque falta a submodularidade que sustenta aquela garantia.
+
+Validado contra a instância clássica de livro-texto (Kleinberg & Tardos) e contra a programação dinâmica exata em 30 instâncias sintéticas aleatórias, em tests/test_mochila.py.
+
+
 ## Instalação
 
 Requer **Python 3.10 ou mais novo**. Os comandos rodam da raiz do repositório.
