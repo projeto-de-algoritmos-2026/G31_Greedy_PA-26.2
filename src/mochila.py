@@ -1,6 +1,6 @@
-
 from __future__ import annotations
- 
+
+import math
 import random
 import sys
 from dataclasses import dataclass
@@ -31,6 +31,13 @@ def valor_local(inst: Instancia) -> list[int]:
     return valores
  
  
+COLUNAS_MAXIMAS = 5_000
+
+
+def _reais(valor: float) -> str:
+    return f"{valor:,.2f}".replace(",", "\x00").replace(".", ",").replace("\x00", ".")
+
+
 @dataclass(frozen=True)
 class ResultadoMochila:
     escolhidas: list[int]
@@ -72,9 +79,10 @@ def guloso_mochila(valores: list[int], custos: list[float], orcamento: float) ->
 def otimo_mochila(valores: list[int], custos: list[float], orcamento: float) -> ResultadoMochila:
 
     n = len(valores)
-    capacidade = int(orcamento)
-    custos_inteiros = [int(c) for c in custos]
- 
+    passo = max(1, math.ceil(orcamento / COLUNAS_MAXIMAS))
+    capacidade = int(orcamento) // passo
+    custos_inteiros = [int(c) // passo for c in custos]
+
     tabela = [[0] * (capacidade + 1) for _ in range(n + 1)]
     for i in range(1, n + 1):
         custo_i, valor_i = custos_inteiros[i - 1], valores[i - 1]
@@ -120,12 +128,12 @@ def _main() -> int:
     valores = valor_local(inst)
     resultado = guloso_mochila(valores, custos, orcamento)
  
-    print(f"Orçamento: R$ {orcamento:,.2f}".replace(",", "."))
+    print(f"Orçamento: R$ {_reais(orcamento)}")
     print(f"Unidades escolhidas: {len(resultado.escolhidas)}")
-    print(f"Custo usado: R$ {resultado.custo_total:,.2f}".replace(",", "."))
+    print(f"Custo usado: R$ {_reais(resultado.custo_total)}")
     print(f"Valor (população local somada): {resultado.valor_total:,}".replace(",", "."))
     for i in resultado.escolhidas:
-        print(f"  - {inst.unidades[i].nome} (custo simulado R$ {custos[i]:,.2f})".replace(",", "."))
+        print(f"  - {inst.unidades[i].nome} (custo simulado R$ {_reais(custos[i])})")
     return 0
  
  

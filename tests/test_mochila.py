@@ -3,7 +3,8 @@ import unittest
  
 from src.cobertura import montar
 from src.dados import Setor, Unidade
-from src.mochila import custo_simulado, guloso_mochila, otimo_mochila, valor_local
+from src.mochila import (_reais, custo_simulado, guloso_mochila, otimo_mochila,
+                         valor_local)
  
  
 def unidade(nome, lat, lon):
@@ -85,6 +86,45 @@ class TestGulosoMochila(unittest.TestCase):
         self.assertEqual(resultado.valor_total, 100)
  
  
+class TestOrcamentoGrande(unittest.TestCase):
+
+    def setUp(self):
+        import random
+        sorteio = random.Random(11)
+        self.valores = [sorteio.randint(500, 9000) for _ in range(200)]
+        self.custos = [sorteio.uniform(43_000, 418_000) for _ in range(200)]
+
+    def test_o_otimo_nunca_fica_abaixo_do_guloso(self):
+        for orcamento in (100_000, 1_000_000, 2_500_000, 5_000_000):
+            guloso = guloso_mochila(self.valores, self.custos, orcamento)
+            otimo = otimo_mochila(self.valores, self.custos, orcamento)
+            self.assertLessEqual(guloso.valor_total, otimo.valor_total,
+                                 f"orçamento {orcamento}")
+
+    def test_orcamento_de_milhoes_resolve_em_menos_de_um_segundo(self):
+        import time
+        inicio = time.perf_counter()
+        otimo_mochila(self.valores, self.custos, 5_000_000)
+        self.assertLess(time.perf_counter() - inicio, 1.0)
+
+    def test_orcamento_maior_nunca_vale_menos(self):
+        anterior = 0
+        for orcamento in (200_000, 600_000, 1_400_000, 3_000_000):
+            atual = otimo_mochila(self.valores, self.custos, orcamento).valor_total
+            self.assertGreaterEqual(atual, anterior)
+            anterior = atual
+
+
+class TestReais(unittest.TestCase):
+
+    def test_separa_milhar_com_ponto_e_decimal_com_virgula(self):
+        self.assertEqual(_reais(300000.0), "300.000,00")
+        self.assertEqual(_reais(51386.44), "51.386,44")
+
+    def test_valor_pequeno_nao_ganha_separador(self):
+        self.assertEqual(_reais(7.5), "7,50")
+
+
 class TestValorECusto(unittest.TestCase):
  
     def setUp(self):

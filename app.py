@@ -218,11 +218,6 @@ def mostrar_comparacao_com_otimo(inst: Instancia, k: int) -> None:
                      "costuma ficar bem mais perto de 100%.")
  
  
-#: Acima disso, a DP de otimo_mochila (O(n × orçamento)) fica cara demais
-#: para rodar a cada interação do slider.
-LIMITE_ORCAMENTO_EXATO = 2_000_000
- 
- 
 def mostrar_mochila(inst: Instancia) -> None:
     """
     Extensão: orçamento em R$ em vez de nº de unidades — Mochila 0/1.
@@ -257,19 +252,13 @@ def mostrar_mochila(inst: Instancia) -> None:
     col2.metric("Custo usado", f"R$ {_formatar(resultado.custo_total)}")
     col3.metric("Valor (pop. local somada)", _formatar(resultado.valor_total))
  
-    if orcamento <= LIMITE_ORCAMENTO_EXATO:
-        otimo = otimo_mochila(valores, custos, orcamento)
-        razao = resultado.valor_total / otimo.valor_total if otimo.valor_total else 1.0
-        st.caption(
-            f"Ótimo (programação dinâmica): {_formatar(otimo.valor_total)} · "
-            f"guloso atingiu {razao:.1%} dele "
-            "(garantia teórica: ≥ 50%)."
-        )
-    else:
-        st.caption(
-            "Ótimo exato não calculado — orçamento grande demais para a "
-            "DP rodar interativamente (ver LIMITE_ORCAMENTO_EXATO)."
-        )
+    otimo = otimo_mochila(valores, custos, orcamento)
+    razao = resultado.valor_total / otimo.valor_total if otimo.valor_total else 1.0
+    st.caption(
+        f"Ótimo (programação dinâmica): {_formatar(otimo.valor_total)} · "
+        f"guloso atingiu {razao:.1%} dele "
+        "(garantia teórica: ≥ 50%)."
+    )
  
  
 def main() -> None:
