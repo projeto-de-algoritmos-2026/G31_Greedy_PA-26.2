@@ -1,11 +1,3 @@
-"""
-Testes das linhas de base.
-
-Quase tudo roda sobre instâncias montadas à mão, com uma armadilha
-embutida de propósito: duas unidades grandes e sobrepostas mais uma menor
-e isolada. É a situação em que "escolher as maiores" erra — e é ela que
-justifica o guloso existir.
-"""
 
 import unittest
 
@@ -38,13 +30,7 @@ def setor(nome, lat, lon, pop):
 
 
 class TestMaioresSozinhas(unittest.TestCase):
-    """
-    A armadilha da sobreposição.
 
-    A e B ficam quase no mesmo ponto e cobrem os mesmos 1.000 habitantes.
-    C está longe e cobre 400. Escolher "as duas maiores" pega A e B e
-    alcança 1.000; escolher A e C alcança 1.400.
-    """
 
     def setUp(self):
         self.inst = montar(
@@ -145,7 +131,7 @@ class TestAleatorias(unittest.TestCase):
 
 
 class TestRegistro(unittest.TestCase):
-    """A validação percorre `LINHAS_DE_BASE`; todas precisam ter a mesma cara."""
+
 
     def test_todas_aceitam_instancia_e_k(self):
         inst = montar([unidade("a", -15.8, -47.9), unidade("b", -15.9, -47.9)],

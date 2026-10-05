@@ -1,4 +1,4 @@
-"""Testes da busca exaustiva usada como referência do guloso."""
+
 
 import unittest
 
@@ -20,8 +20,7 @@ def setor(nome, lat, lon, pop):
 class TestExato(unittest.TestCase):
 
     def setUp(self):
-        # A e B são grandes e sobrepostas; C é menor e independente.
-        # Para k=2, A+C (1.400) é melhor que A+B (1.000).
+
         self.inst = montar(
             [
                 unidade("A", -15.8000, -47.9000),

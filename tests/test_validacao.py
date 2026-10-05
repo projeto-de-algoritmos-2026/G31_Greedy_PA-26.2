@@ -1,11 +1,4 @@
-"""
-Testes da validação.
 
-O foco é a lógica que transforma números em afirmações — a curva, a
-comparação com o ótimo e a geração dos arquivos. Os gráficos são
-conferidos como XML bem formado e com as séries presentes; a aparência
-final é conferida a olho, que é o único jeito honesto.
-"""
 
 import contextlib
 import io
@@ -33,7 +26,7 @@ def setor(nome, lat, lon, pop):
 
 
 def instancia_pequena():
-    """Cinco unidades em fila, cada uma cobrindo um setor diferente."""
+
     return montar(
         [unidade(f"u{i}", -15.80 - i / 50, -47.90) for i in range(5)],
         [setor(f"s{i}", -15.80 - i / 50, -47.90, 100 * (i + 1)) for i in range(5)],
@@ -56,7 +49,7 @@ class TestCurva(unittest.TestCase):
         self.assertEqual(len(tamanhos), 1)
 
     def test_a_cobertura_nunca_diminui_com_mais_unidades(self):
-        """Acrescentar unidade não pode tirar gente da conta."""
+
         for nome, valores in self.series.items():
             for anterior, atual in zip(valores, valores[1:]):
                 self.assertGreaterEqual(atual, anterior, nome)
@@ -69,14 +62,14 @@ class TestCurva(unittest.TestCase):
                 self.assertGreaterEqual(g, b, f"{nome} passou o guloso em k={k}")
 
     def test_cada_cor_tem_uma_serie_e_vice_versa(self):
-        """Se alguém acrescentar uma linha de base sem cor, o gráfico quebra."""
+
         self.assertEqual(set(self.series), set(COR))
 
 
 class TestContraOOtimo(unittest.TestCase):
 
     def test_o_guloso_nunca_passa_do_otimo(self):
-        """Se passar, um dos dois está errado."""
+
         inst = instancia_pequena()
         for c in contra_o_otimo(inst, instancias=4, semente=1):
             self.assertLessEqual(c.guloso, c.otimo)
@@ -119,10 +112,7 @@ class TestGraficos(unittest.TestCase):
 
 
 class TestMapa(unittest.TestCase):
-    """
-    O mapa é desenho, e desenho se confere a olho. O que dá para testar
-    é que ele não quebra e que as duas categorias aparecem.
-    """
+
 
     def setUp(self):
         self.inst = instancia_pequena()
@@ -137,16 +127,13 @@ class TestMapa(unittest.TestCase):
         self.assertIn(SEM_COBERTURA, svg)
 
     def test_sem_nenhuma_escolhida_nao_quebra(self):
-        """Caso de borda do k = 0; nada fica azul, mas o mapa existe."""
+  
         svg = grafico_mapa(self.inst, [])
         ET.fromstring(svg)
         self.assertIn(SEM_COBERTURA, svg)
 
     def test_todo_setor_com_gente_vira_um_ponto(self):
-        """
-        Contando os círculos: um por setor com gente, dois por escolhida
-        (o alcance e a marca) e três da legenda.
-        """
+
         svg = grafico_mapa(self.inst, self.escolhidas)
         circulos = len(ET.fromstring(svg).findall(
             "{http://www.w3.org/2000/svg}circle"))
@@ -154,34 +141,29 @@ class TestMapa(unittest.TestCase):
         self.assertEqual(circulos, com_gente + 2 * len(self.escolhidas) + 3)
 
     def test_o_enquadramento_nao_muda_com_o_k(self):
-        """
-        Dois mapas de `k` diferentes só podem ser comparados se o recorte
-        for o mesmo. Conferindo pelos pontos dos setores, que são iguais
-        nos dois desenhos e precisam cair nas mesmas coordenadas.
-        """
+
         def cinzas(k):
             svg = ET.fromstring(grafico_mapa(self.inst, guloso(self.inst, k)))
             return {(c.get("cx"), c.get("cy"))
                     for c in svg.findall("{http://www.w3.org/2000/svg}circle")
                     if c.get("fill") == SEM_COBERTURA}
 
-        # com k = 1 um setor fica azul; os outros têm de continuar
-        # exatamente onde estavam com k = 0
+
         self.assertLess(len(cinzas(1)), len(cinzas(0)))
         self.assertTrue(cinzas(1) < cinzas(0))
 
     def test_um_setor_so_nao_divide_por_zero(self):
-        """Instância degenerada: vão zero em latitude e em longitude."""
+
         inst = montar([unidade("u", -15.8, -47.9)],
                       [setor("s", -15.8, -47.9, 100)], raio_km=1.0)
         ET.fromstring(grafico_mapa(inst, [0]))
 
 
 class TestDesenharMapa(unittest.TestCase):
-    """O caminho do `--so-mapa`, que não passa pela rodada completa."""
+
 
     def _desenhar(self, inst, base, k) -> str:
-        """Chama o desenho engolindo o que ele imprime, e devolve isso."""
+  
         saida = io.StringIO()
         with contextlib.redirect_stdout(saida):
             _desenhar_mapa(inst, base, k)
@@ -214,11 +196,7 @@ class TestDesenharMapa(unittest.TestCase):
         self.assertEqual(gravados, ["v_raio2_mapa_k2.svg", "v_raio2_mapa_k4.svg"])
 
     def test_o_atalho_do_guloso_bate_com_o_historico(self):
-        """
-        O `--so-mapa` chama `guloso` direto, e a rodada completa reaproveita
-        o `historico` que já calculou. Os dois precisam escolher o mesmo,
-        na mesma ordem, senão os dois caminhos desenham mapas diferentes.
-        """
+  
         inst = instancia_pequena()
         self.assertEqual(guloso(inst, 3),
                          [p.unidade for p in historico(inst, 3)])
@@ -235,7 +213,7 @@ class TestTabela(unittest.TestCase):
 
 
 class TestArquivosGerados(unittest.TestCase):
-    """O `_main` grava quatro arquivos; aqui só se confere o formato."""
+
 
     def test_o_json_e_lido_de_volta(self):
         inst = instancia_pequena()

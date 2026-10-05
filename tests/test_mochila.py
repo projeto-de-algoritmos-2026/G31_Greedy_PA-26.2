@@ -16,11 +16,7 @@ def setor(nome, lat, lon, pop):
  
  
 class TestOtimoMochila(unittest.TestCase):
-    """
-    Instância clássica de livro-texto (Kleinberg & Tardos, cap. 11):
-    itens (valor, custo) = (60,10), (100,20), (120,30); capacidade 50.
-    Ótimo conhecido de antemão: itens 2 e 3, valor 220.
-    """
+
  
     def test_instancia_classica(self):
         valores = [60, 100, 120]
@@ -56,7 +52,7 @@ class TestGulosoMochila(unittest.TestCase):
         self.assertLessEqual(resultado.custo_total, 50)
  
     def test_nunca_passa_do_otimo(self):
-        """O guloso (com a correção do item isolado) nunca bate o ótimo."""
+  
         valores = [60, 100, 120, 55, 40, 70, 90]
         custos = [10, 20, 30, 15, 8, 25, 18]
         orcamento = 50
@@ -65,11 +61,7 @@ class TestGulosoMochila(unittest.TestCase):
         self.assertLessEqual(guloso.valor_total, otimo.valor_total)
  
     def test_respeita_garantia_de_metade_do_otimo(self):
-        """
-        A correção do melhor item isolado garante pelo menos 1/2 do ótimo
-        (Kleinberg & Tardos, cap. 11) — testado numa bateria de instâncias
-        sintéticas, não só uma.
-        """
+
         import random
         sorteio = random.Random(99)
         for _ in range(30):
@@ -86,12 +78,7 @@ class TestGulosoMochila(unittest.TestCase):
                 self.assertGreaterEqual(razao, 0.5 - 1e-9)
  
     def test_item_caro_e_valioso_nao_e_ignorado(self):
-        """
-        O caso que o guloso puro (sem a correção) erraria: um item caro e
-        valioso, mas sozinho, perde pra vários itens baratos de razão
-        melhor — a correção do melhor isolado resgata ele quando vale
-        mais que a soma dos baratos.
-        """
+ 
         valores = [100, 1, 1, 1, 1]
         custos = [100, 1, 1, 1, 1]
         resultado = guloso_mochila(valores, custos, orcamento=100)

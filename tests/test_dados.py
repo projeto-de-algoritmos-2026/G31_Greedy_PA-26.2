@@ -1,11 +1,3 @@
-"""
-Testes do carregamento.
-
-Os testes que dependem dos arquivos brutos são pulados quando eles não
-estão em `data/raw/`, então a suíte roda num clone recém-feito. Os que
-checam a conversão de número rodam sempre — é ali que mora a armadilha da
-vírgula decimal.
-"""
 
 import unittest
 from pathlib import Path
@@ -45,7 +37,7 @@ class TestNumero(unittest.TestCase):
         self.assertIsNone(_numero(None))
 
     def test_lixo_e_none_em_vez_de_excecao(self):
-        """Dado ruim vira ausência de dado, não parada do programa."""
+
         self.assertIsNone(_numero("N/A"))
         self.assertIsNone(_numero("-15.7.9"))
 
@@ -71,7 +63,7 @@ class TestUnidades(unittest.TestCase):
         cls.unidades = carregar_unidades()
 
     def test_quantidade_conhecida(self):
-        """212 registros no DF, 200 com coordenada utilizável."""
+
         self.assertEqual(len(self.unidades), 200)
 
     def test_todas_dentro_do_df(self):
@@ -83,7 +75,7 @@ class TestUnidades(unittest.TestCase):
         self.assertEqual(len(codigos), len(set(codigos)))
 
     def test_longitude_negativa(self):
-        """Se a vírgula decimal não for tratada, isto quebra."""
+
         for u in self.unidades:
             self.assertLess(u.lon, -47.0)
 

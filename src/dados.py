@@ -1,12 +1,4 @@
-"""
-Carregamento das duas bases: unidades de saúde e setores censitários.
 
-    python -m src.dados
-
-Os arquivos brutos ficam em `data/raw/`, que não é versionado. As
-instruções de download estão em `data/README.md`, e rodar este módulo sem
-eles imprime os comandos em vez de estourar um traceback.
-"""
 from __future__ import annotations
 
 import csv

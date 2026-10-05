@@ -1,4 +1,4 @@
-"""Geometria no plano e na esfera, sem biblioteca de GIS."""
+
 from __future__ import annotations
 
 import math
@@ -9,17 +9,7 @@ RAIO_DA_TERRA_KM = 6371.0
 
 def centroide(pontos: list[tuple[float, float]],
               inicios: list[int] | None = None) -> tuple[float, float]:
-    """
-    Centro de massa de um polígono, pela fórmula do shoelace.
 
-    `pontos` vem do shapefile como uma lista corrida de (x, y) e `inicios`
-    diz onde cada anel começa — um setor pode ter várias partes (ilhas) ou
-    buracos. Anéis são percorridos em sentidos opostos no formato shapefile,
-    então somar as áreas com sinal já desconta os buracos sozinho.
-
-    Cai na média aritmética dos vértices quando a área dá zero, o que
-    acontece em polígono degenerado — raro, mas existe em base real.
-    """
     if not pontos:
         raise ValueError("polígono sem pontos")
 
@@ -44,12 +34,7 @@ def centroide(pontos: list[tuple[float, float]],
 
 
 def distancia_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """
-    Distância de haversine — a que se percorre sobre a superfície da Terra.
-
-    Pitágoras direto em graus erraria: um grau de longitude vale 111 km no
-    equador e encolhe conforme se afasta dele. No DF, a -15,8°, vale 107 km.
-    """
+ 
     fi1, fi2 = math.radians(lat1), math.radians(lat2)
     dfi = fi2 - fi1
     dlambda = math.radians(lon2 - lon1)
