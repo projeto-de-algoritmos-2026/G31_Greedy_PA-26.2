@@ -334,7 +334,12 @@ estão em `data/raw/`, então a suíte roda num clone recém-feito, sem download
 
 ## Apresentação
 
-`<link do vídeo>`
+Cinco minutos: o problema, os dados, o guloso contra as escolhas óbvias e contra
+a força bruta, e a extensão em Mochila.
+
+[![Vídeo de apresentação do projeto](https://img.youtube.com/vi/lRre_KViSNs/maxresdefault.jpg)](https://www.youtube.com/watch?v=lRre_KViSNs)
+
+<https://www.youtube.com/watch?v=lRre_KViSNs>
 
 ## Referências
 
