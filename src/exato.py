@@ -15,13 +15,7 @@ def _validar_k(k: int) -> None:
 
 
 def exato(inst: Instancia, k: int) -> list[int]:
-    """
-    Encontra uma solução ótima usando busca exaustiva.
 
-    A solução retornada contém até `k` unidades, em ordem crescente de índice
-    para tornar o resultado determinístico. Se `k` for maior que o número de
-    unidades, todas as unidades são consideradas.
-    """
     _validar_k(k)
 
     n = len(inst.unidades)
@@ -32,10 +26,6 @@ def exato(inst: Instancia, k: int) -> list[int]:
     melhor: tuple[int, ...] = ()
     melhor_populacao = -1
 
-    # Examinamos combinações de tamanho exatamente k. Com pesos não negativos,
-    # adicionar uma unidade nunca diminui a cobertura; portanto uma solução
-    # ótima com no máximo k unidades pode ser representada por uma combinação
-    # de tamanho k quando k <= n.
     for combinacao in itertools.combinations(range(n), limite):
         cobertos = inst.cobertos_por(combinacao)
         populacao = inst.populacao_de(cobertos)
@@ -47,7 +37,7 @@ def exato(inst: Instancia, k: int) -> list[int]:
 
 
 def populacao_coberta(inst: Instancia, k: int) -> int:
-    """Retorna a população coberta pela solução ótima para `k` unidades."""
+
     return inst.populacao_de(inst.cobertos_por(exato(inst, k)))
 
 
