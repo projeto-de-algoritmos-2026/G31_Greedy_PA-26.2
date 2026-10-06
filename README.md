@@ -332,10 +332,7 @@ python -m unittest discover
 São 111 testes. Os que dependem dos arquivos brutos são pulados quando eles não
 estão em `data/raw/`, então a suíte roda num clone recém-feito, sem download.
 
-## Apresentação
-
-Cinco minutos: o problema, os dados, o guloso contra as escolhas óbvias e contra
-a força bruta, e a extensão em Mochila.
+## Vídeo de Apresentação
 
 [![Vídeo de apresentação do projeto](https://img.youtube.com/vi/lRre_KViSNs/maxresdefault.jpg)](https://www.youtube.com/watch?v=lRre_KViSNs)
 
